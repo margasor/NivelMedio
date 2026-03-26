@@ -1,0 +1,14 @@
+name: Condicional - solo si cambia src
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "src/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hola, solo corro si cambió src
+        run: echo "Se detectaron cambios en /src, así que ejecuto el job"
