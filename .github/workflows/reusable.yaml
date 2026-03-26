@@ -1,14 +1,20 @@
-name: Reusable - instalar y tests
+name: Reusable Demo (sin Node)
 
 on:
   workflow_call:
 
 jobs:
-  test:
+  demo:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Instalar dependencias
-        run: npm ci
-      - name: Ejecutar tests
-        run: npm test
+      - name: Mensaje para demostrar que se llamó
+        run: echo "✅ Hola, soy el workflow REUTILIZABLE del repo 1"
+
+      - name: Comprobar si existe carpeta src en el repo llamador
+        run: |
+          if [ -d "src" ]; then
+            echo "✅ En el repo 2 existe la carpeta src/"
+            ls -la src
+          else
+            echo "⚠️ En el repo 2 NO existe la carpeta src/ (no es error)"
+          fi
