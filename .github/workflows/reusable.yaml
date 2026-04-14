@@ -1,19 +1,24 @@
-name: Reusable Python (compile + unittest)
+name: Reusable Python CI
 
 on:
   workflow_call:
     inputs:
       python-version:
-        description: "Versión de Python a usar"
         required: true
         type: string
+      run-compile:
+        required: false
+        default: true
+        type: boolean
+      run-tests:
+        required: false
+        default: true
+        type: boolean
       src-path:
-        description: "Carpeta del código"
         required: false
         default: "src"
         type: string
       tests-path:
-        description: "Carpeta de tests"
         required: false
         default: "tests"
         type: string
@@ -21,7 +26,6 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-24.04
-
     steps:
       - name: Checkout (del repo que llama)
         uses: actions/checkout@v6
@@ -31,10 +35,28 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
 
-      - name: Validación rápida (compilar código)
+      - name: Mostrar info del entorno
         run: |
-          python -m compileall ${{ inputs.src-path }}
+          python --version
+          python -c "import sys; print('sys.path:', sys.path)"
 
-      - name: Ejecutar tests (unittest)
+      - name: Compilar código (si existe src)
+        if: inputs.run-compile
         run: |
-          python -m unittest discover -s ${{ inputs.tests-path }} -p "test_*.py" -v
+          if [ -d "${{ inputs.src-path }}" ]; then
+            echo "✅ Compilando ${{ inputs.src-path }}"
+            python -m compileall "${{ inputs.src-path }}"
+          else
+            echo "⚠️ No existe '${{ inputs.src-path }}' en el repo caller. Me salto compile."
+          fi
+
+      - name: Ejecutar tests unittest (si existe tests)
+        if: inputs.run-tests
+        run: |
+          if [ -d "${{ inputs.tests-path }}" ]; then
+            echo "✅ Ejecutando tests en ${{ inputs.tests-path }}"
+            export PYTHONPATH="$GITHUB_WORKSPACE"
+            python -m unittest discover -s "${{ inputs.tests-path }}" -p "test_*.py" -v
+          else
+            echo "⚠️ No existe '${{ inputs.tests-path }}' en el repo caller. Me salto tests."
+          fi
