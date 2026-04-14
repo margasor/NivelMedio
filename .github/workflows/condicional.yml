@@ -1,4 +1,30 @@
-name: Condicional - solo si cambia src
+name: CI condicional por rutas
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - src/**
+      - tests/**
+  pull_request:
+    branches:
+      - main
+      - master
+    paths:
+      - src/**
+      - tests/**
+
+jobs:
+  demo:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Mostrar información del contexto
+        run: |
+          echo "Evento: ${{ github.event_name }}"
+          echo "Rama: ${{ github.ref }}"
+          echo "Commit: ${{ github.sha }}"name: Condicional - solo si cambia src
 
 on:
   push:
