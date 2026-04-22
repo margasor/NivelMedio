@@ -1,7 +1,8 @@
-name: CI condicional por rutas
+name: CI condicional por rutas (feature)
 
 on:
   push:
+    workflow_dispatch:
     branches:
       - main
       - master
